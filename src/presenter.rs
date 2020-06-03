@@ -12,7 +12,8 @@ pub fn set_content(content: String, home_team: String, away_team: String) {
             match arg {
                 "start_game" => {
                     webview
-                        .eval(&format!("initField({}, {})", home_team, away_team))
+                        // .eval(&format!("startGame({}, {})", home_team, away_team))
+                        .eval(&format!("startGame({}, {})", home_team, away_team))
                         .unwrap();
                 }
                 _ => unimplemented!(),
