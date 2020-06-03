@@ -17,7 +17,7 @@ pub fn extract_players(path: &String) -> Vec<Player> {
     players
 }
 
-pub fn get_team(club_name: String, path: &String) -> Team {
+pub fn get_team(club_name: &str, path: &String) -> Team {
     let f_path = Path::new(&path);
     let mut rdr = csv::Reader::from_path(f_path).unwrap();
 

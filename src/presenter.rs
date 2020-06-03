@@ -4,7 +4,7 @@ pub fn set_content(content: String, home_team: String, away_team: String) {
     web_view::builder()
         .title("My Project")
         .content(Content::Html(content))
-        .size(340, 450)
+        .size(820, 539)
         .resizable(false)
         .debug(true)
         .user_data(())
@@ -34,9 +34,8 @@ pub fn get_content() -> String {
             </style>
 			</head>
             <body>
-            <canvas id="field" width="340" height="420"></canvas>
-
-            <button>Test</button>
+            <canvas id="field" width="800" height="518"></canvas>
+            <span id="debug"></span>
 
             <script>
                 {scripts}
