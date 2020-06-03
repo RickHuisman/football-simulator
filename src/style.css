@@ -1,0 +1,15 @@
+body {
+  margin: 0px;
+}
+
+.player {
+  height: 25px;
+  width: 25px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+#field {
+  background-color: #349628;
+}
