@@ -31,7 +31,7 @@ pub fn get_team(club_name: &str, path: &String) -> Team {
         }
     }
 
-    Team { players: players }
+    Team { players }
 }
 
 // pub fn get_team(player_list: &Vec<Player>, player_ids: Vec<u32>) -> Team {

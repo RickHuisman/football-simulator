@@ -4,7 +4,7 @@ pub fn set_content(content: String, home_team: String, away_team: String) {
     web_view::builder()
         .title("My Project")
         .content(Content::Html(content))
-        .size(820, 539)
+        .size(820, 545)
         .resizable(false)
         .debug(true)
         .user_data(())
@@ -12,7 +12,6 @@ pub fn set_content(content: String, home_team: String, away_team: String) {
             match arg {
                 "start_game" => {
                     webview
-                        // .eval(&format!("startGame({}, {})", home_team, away_team))
                         .eval(&format!("startGame({}, {})", home_team, away_team))
                         .unwrap();
                 }

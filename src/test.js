@@ -1,36 +1,37 @@
 const Game = (function () {
   const canvas = document.getElementById("field");
   let timer = {};
-  const coordinates = [
-    { x: 200, y: 259 },
-    { x: 230, y: 229 },
-    { x: 290, y: 289 },
-    { x: 550, y: 289 },
-    { x: 400, y: 320 },
-    { x: 200, y: 259 },
-  ];
+
+  homeTeam = [];
+  awayTeam = [];
 
   const step = function () {
     // Game.Player.move(coordinates[3]);
   };
 
-  const start = function (homeTeam, awayTeam) {
-    Game.Pitch.draw(canvas);
-
-    homeTeam.players.forEach((player) => {
+  const start = function (homeTeamPlayers, awayTeamPlayers) {
+    homeTeamPlayers.players.forEach((player) => {
       if (player.team_position != "SUB" && player.team_position != "RES") {
-        // drawPlayer(player, true);
-        Game.Player.draw(canvas);
+        homeTeam.push(new Player("home", player.team_position));
       }
     });
 
-    console.log(homeTeam);
-    console.log(awayTeam);
+    awayTeamPlayers.players.forEach((player) => {
+      if (player.team_position != "SUB" && player.team_position != "RES") {
+        awayTeam.push(new Player("away", player.team_position));
+      }
+    });
 
-    // Game.Player.draw(canvas);
-    // Game.Ball.x = 800;
-    // Game.Ball.y = 250;
+    draw();
+
     timer = window.setInterval(step, 50);
+  };
+
+  const draw = function () {
+    Game.Pitch.draw(canvas);
+
+    // homeTeam.forEach((player) => player.draw());
+    awayTeam.forEach((player) => player.draw());
   };
 
   return {
@@ -217,65 +218,78 @@ Game.Ball = (function () {
   };
 })();
 
-Game.Player = (function () {
-  const team = "home";
-  const speed = 1.5;
-  let x = 10;
-  let y = 10;
+const playerStartingPosition = {
+  GK: [40, 259],
+  LCB: [120, 150],
+  RCB: [120, 350],
+  LB: [150, 60],
+  RB: [150, 458],
+  RCM: [250, 100],
+  LCM: [250, 418],
+  CDM: [250, 259],
+  RW: [380, 418],
+  LW: [380, 100],
+  ST: [380, 259],
+  CF: [330, 259],
+};
 
-  const isAt = function (point) {
-    return Math.abs(x - point.x) < 1
-      ? Math.abs(y - point.y) < 1
-        ? true
-        : false
+class Player {
+  constructor(team, role) {
+    this.team = team;
+    this.role = role;
+    this.speed = 1.5;
+    const startingPosition = playerStartingPosition[role];
+    this.x = startingPosition[0];
+    this.y = startingPosition[1];
+    console.log(this.x, this.y);
+  }
+
+  isAt(point) {
+    return Math.abs(this.x - point.x) < 1
+      ? Math.abs(this.y - point.y) < 1
       : false;
-  };
+  }
 
-  const move = function (point) {
+  move(point) {
     if (!isAt(point)) {
       let h = Math.sqrt(
-        Math.pow(Math.abs(x - point.x), 2) + Math.pow(Math.abs(y - point.y), 2)
+        Math.pow(Math.abs(this.x - point.x), 2) +
+          Math.pow(Math.abs(this.y - point.y), 2)
       );
-      let v = Math.acos(Math.abs(x - point.x) / h);
-      let _x = speed * Math.cos(v);
-      let _y = speed * Math.sin(v);
+      let v = Math.acos(Math.abs(this.x - point.x) / h);
+      let x = this.speed * Math.cos(v);
+      let y = this.speed * Math.sin(v);
 
-      if (point.x >= x && point.y >= y) {
-        x += _x;
-        y += _y;
-      } else if (point.x >= x && point.y < y) {
-        x += _x;
-        y -= _y;
-      } else if (point.x < x && point.y >= y) {
-        x -= _x;
-        y += _y;
-      } else if (point.x < x && point.y < y) {
-        x -= _x;
-        y -= _y;
+      if (point.x >= this.x && point.y >= this.y) {
+        this.x += x;
+        this.y += y;
+      } else if (point.x >= this.x && point.y < this.y) {
+        this.x += x;
+        this.y -= y;
+      } else if (point.x < this.x && point.y >= this.y) {
+        this.x -= x;
+        this.y += y;
+      } else if (point.x < this.x && point.y < this.y) {
+        this.x -= x;
+        this.y -= y;
       }
 
-      draw();
+      this.draw();
     }
-  };
+  }
 
-  const draw = function () {
+  draw() {
     const canvas = document.getElementById("field");
     let ctx = canvas.getContext("2d");
-    Game.Pitch.draw(canvas);
     ctx.beginPath();
-    ctx.arc(x, y, 3, 0, 2 * Math.PI, false);
-    ctx.fillStyle = team === "home" ? "#00F" : "#F00";
+    ctx.arc(this.x, this.y, 3, 0, 2 * Math.PI, false);
+    ctx.fillStyle = this.team === "home" ? "#00F" : "#F00";
     ctx.fill();
     ctx.strokeStyle = "#000";
     ctx.stroke();
     ctx.closePath();
-  };
-
-  return {
-    move: move,
-    draw: draw,
-  };
-})();
+  }
+}
 
 external.invoke("start_game");
 
