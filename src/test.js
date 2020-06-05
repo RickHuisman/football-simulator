@@ -2,40 +2,61 @@ const Game = (function () {
   const canvas = document.getElementById("field");
   let timer = {};
 
-  homeTeam = [];
-  awayTeam = [];
+  let homeTeam = [];
+  let awayTeam = [];
 
   const step = function () {
-    // Game.Player.move(coordinates[3]);
+    console.log("draw()");
+    external.invoke("step");
   };
 
-  const start = function (homeTeamPlayers, awayTeamPlayers) {
-    homeTeamPlayers.players.forEach((player) => {
+  const update = function (step) {
+    reset();
+
+    step.home_team.players.forEach((player) => {
       if (player.team_position != "SUB" && player.team_position != "RES") {
         homeTeam.push(new Player("home", player.team_position));
       }
     });
 
-    awayTeamPlayers.players.forEach((player) => {
+    step.away_team.players.forEach((player) => {
+      console.log(player);
       if (player.team_position != "SUB" && player.team_position != "RES") {
         awayTeam.push(new Player("away", player.team_position));
       }
     });
 
     draw();
+    // Game.draw();
+    // const player = Game.awayTeam[0];
+    // const point = {
+    //   x: x,
+    //   y: y
+    // }
+    // player.move(point);
+  }
 
-    timer = window.setInterval(step, 50);
+  const reset = function () {
+    homeTeam = [];
+    awayTeam = [];
+  }
+
+  const start = function () {
+    timer = window.setInterval(step, 100);
   };
 
   const draw = function () {
     Game.Pitch.draw(canvas);
 
-    // homeTeam.forEach((player) => player.draw());
-    awayTeam.forEach((player) => player.draw());
+    homeTeam.forEach((player) => player.draw());
+    // awayTeam.forEach((player) => player.draw());
   };
 
   return {
     start: start,
+    update: update,
+    homeTeam: homeTeam,
+    awayTeam: awayTeam
   };
 })();
 
@@ -237,11 +258,10 @@ class Player {
   constructor(team, role) {
     this.team = team;
     this.role = role;
-    this.speed = 1.5;
+    this.speed = 1.5; // TODO Remove from simulator
     const startingPosition = playerStartingPosition[role];
     this.x = startingPosition[0];
     this.y = startingPosition[1];
-    console.log(this.x, this.y);
   }
 
   isAt(point) {
@@ -251,7 +271,7 @@ class Player {
   }
 
   move(point) {
-    if (!isAt(point)) {
+    if (!this.isAt(point)) {
       let h = Math.sqrt(
         Math.pow(Math.abs(this.x - point.x), 2) +
           Math.pow(Math.abs(this.y - point.y), 2)
@@ -291,110 +311,8 @@ class Player {
   }
 }
 
-external.invoke("start_game");
-
-function startGame(homeTeam, awayTeam) {
-  Game.start(homeTeam, awayTeam);
+function step(step) {
+  Game.update(step);
 }
 
-// function loadHomeTeam(players) {
-//   console.log(players);
-// }
-
-// function initField(homeTeam, awayTeam) {
-//   console.log(homeTeam);
-//   console.log(awayTeam);
-//   homeTeam.players.forEach((player) => {
-//     if (player.team_position != "SUB" && player.team_position != "RES") {
-//       drawPlayer(player, true);
-//     }
-//   });
-
-//   awayTeam.players.forEach((player) => {
-//     if (player.team_position != "SUB" && player.team_position != "RES") {
-//       drawPlayer(player, false);
-//     }
-//   });
-// }
-
-// function drawPlayer(player, isHomeTeam) {
-//   const pos_on_field = getPositionOnField(player.team_position, isHomeTeam);
-
-//   let c = document.getElementById("field");
-//   let ctx = c.getContext("2d");
-
-//   let circle = new Path2D();
-//   const circleSize = 10;
-//   const startAngle = 0;
-//   const endAngle = 2 * Math.PI;
-
-//   circle.arc(
-//     pos_on_field[0],
-//     pos_on_field[1],
-//     circleSize,
-//     startAngle,
-//     endAngle
-//   );
-
-//   ctx.fill(circle);
-
-//   ctx.fillText(
-//     player.name,
-//     pos_on_field[0] - circleSize,
-//     pos_on_field[1] + circleSize * 2
-//   );
-// }
-
-// function getPositionOnField(teamPosition, isHomeTeam) {
-//   let position = [0, 0];
-//   switch (teamPosition) {
-//     case "GK":
-//       position = [170, 20];
-//       break;
-//     case "LCB":
-//       position = [130, 50];
-//       break;
-//     case "RCB":
-//       position = [210, 50];
-//       break;
-//     case "LB":
-//       position = [40, 70];
-//       break;
-//     case "RB":
-//       position = [300, 70];
-//       break;
-//     case "RCM":
-//       position = [90, 115];
-//       break;
-//     case "LCM":
-//       position = [250, 115];
-//       break;
-//     case "CDM":
-//       position = [170, 115];
-//       break;
-//     case "RW":
-//       position = [90, 180];
-//       break;
-//     case "LW":
-//       position = [250, 180];
-//       break;
-//     case "ST":
-//       position = [170, 180];
-//       break;
-//     case "CF":
-//       position = [170, 160];
-//       break;
-//   }
-
-//   if (!isHomeTeam) {
-//     position[1] = 420 - position[1];
-//   }
-
-//   return position;
-// }
-
-// function addPlayer() {
-//   let node = document.createElement("SPAN");
-//   node.className += "player";
-//   document.getElementById("players").appendChild(node);
-// }
+Game.start();

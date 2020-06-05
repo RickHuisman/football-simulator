@@ -1,18 +1,25 @@
 use web_view::*;
+use rand::{thread_rng, Rng};
 
-pub fn set_content(content: String, home_team: String, away_team: String) {
+use crate::game::Game;
+
+pub fn start() {
+    let game = Game::new(105, 85, "FC Barcelona", "Liverpool");
+
     web_view::builder()
         .title("My Project")
-        .content(Content::Html(content))
+        .content(Content::Html(get_content()))
         .size(820, 545)
         .resizable(false)
         .debug(true)
         .user_data(())
         .invoke_handler(|webview, arg| {
             match arg {
-                "start_game" => {
+                "step" => {
+                    let step = serde_json::to_string(&game.clone().step()).unwrap();
+
                     webview
-                        .eval(&format!("startGame({}, {})", home_team, away_team))
+                        .eval(&format!("step({})", step))
                         .unwrap();
                 }
                 _ => unimplemented!(),
@@ -23,7 +30,7 @@ pub fn set_content(content: String, home_team: String, away_team: String) {
         .unwrap();
 }
 
-pub fn get_content() -> String {
+fn get_content() -> String {
     let html = format!(
         r#"
 		<!doctype html>

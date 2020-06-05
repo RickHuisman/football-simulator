@@ -1,32 +1,44 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+use crate::fifa;
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Game {
     field_w: usize,
     field_h: usize,
     home_team: Team,
-    away_team: Vec<Player>,
+    away_team: Team,
 }
 
 impl Game {
-    // pub fn new(field_w: usize, field_h: usize) -> Game {
-    //     let players = vec![
-    //         Player {
-    //             pos: Position::new(5, 5)
-    //         };
-    //         11
-    //     ];
-    //     Game {
-    //         field_w,
-    //         field_h,
-    //         home_team: (*players).to_vec(),
-    //         away_team: (*players).to_vec(),
-    //     }
-    // }
+    pub fn new(field_w: usize, field_h: usize, home_team: &str, away_team: &str) -> Game {
+        let csv_file =
+            "/Users/rickhuisman/Downloads/360179_705412_bundle_archive/players_20.csv".to_string();
 
-    pub fn get_home_team(game: Game) -> Team {
-        game.home_team
+        let home_team = fifa::get_team("FC Barcelona", &csv_file);
+        let away_team = fifa::get_team("Liverpool", &csv_file);
+
+        Game {
+            field_w,
+            field_h,
+            home_team,
+            away_team,
+        }
     }
+
+    pub fn step(self) -> GameStep {
+        GameStep {
+            home_team: self.home_team,
+            away_team: self.away_team
+        }
+        // &self.home_team
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GameStep {
+    home_team: Team,
+    away_team: Team,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -41,7 +53,7 @@ impl Position {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Team {
     pub players: Vec<Player>,
 }

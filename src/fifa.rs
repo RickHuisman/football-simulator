@@ -34,18 +34,6 @@ pub fn get_team(club_name: &str, path: &String) -> Team {
     Team { players }
 }
 
-// pub fn get_team(player_list: &Vec<Player>, player_ids: Vec<u32>) -> Team {
-//     let players = player_ids
-//         .iter()
-//         .map(|id| {
-//             let mut players = player_list.clone().into_iter();
-//             let player = players.find(|x| x.sofifaid == *id).unwrap();
-//         })
-//         .collect::<Vec<Player>>();
-
-//     Team { players }
-// }
-
 fn get_player(record: StringRecord) -> Player {
     let sofifaid = record.get(0).unwrap().to_string().parse::<u32>().unwrap();
     let name = record.get(2).unwrap().to_string();
