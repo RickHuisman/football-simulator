@@ -49,7 +49,7 @@ const Game = (function () {
     Game.Pitch.draw(canvas);
 
     homeTeam.forEach((player) => player.draw());
-    // awayTeam.forEach((player) => player.draw());
+    awayTeam.forEach((player) => player.draw());
   };
 
   return {
@@ -239,7 +239,7 @@ Game.Ball = (function () {
   };
 })();
 
-const playerStartingPosition = {
+const playerHomeStartingPosition = {
   GK: [40, 259],
   LCB: [120, 150],
   RCB: [120, 350],
@@ -254,12 +254,30 @@ const playerStartingPosition = {
   CF: [330, 259],
 };
 
+const playerAwayStartingPosition = {
+  GK: [760, 259],
+  LCB: [680, 150],
+  RCB: [680, 350],
+  LB: [650, 60],
+  RB: [650, 458],
+  RCM: [550, 100],
+  LCM: [550, 418],
+  CDM: [550, 259],
+  RW: [420, 418],
+  LW: [420, 100],
+  ST: [420, 259],
+  CF: [420, 259],
+};
+
+
 class Player {
   constructor(team, role) {
     this.team = team;
     this.role = role;
     this.speed = 1.5; // TODO Remove from simulator
-    const startingPosition = playerStartingPosition[role];
+    const startingPosition = team === "home"
+        ? playerHomeStartingPosition[role]
+        : playerAwayStartingPosition[role];
     this.x = startingPosition[0];
     this.y = startingPosition[1];
   }
