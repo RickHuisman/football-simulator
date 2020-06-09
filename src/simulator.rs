@@ -1,58 +1,54 @@
-use web_view::*;
-use rand::{thread_rng, Rng};
+use piston_window::*;
+use rand::Rng;
 
 use crate::game::Game;
 
-pub fn start() {
-    let game = Game::new(105, 85, "FC Barcelona", "Liverpool");
+fn render<G>(game: &Game, context: Context, g: &mut G)
+where
+    G: Graphics,
+{
+    draw_pitch(context, g);
 
-    web_view::builder()
-        .title("My Project")
-        .content(Content::Html(get_content()))
-        .size(820, 545)
-        .resizable(false)
-        .debug(true)
-        .user_data(())
-        .invoke_handler(|webview, arg| {
-            match arg {
-                "step" => {
-                    let step = serde_json::to_string(&game.clone().step()).unwrap();
+    let mut rand = rand::thread_rng();
 
-                    webview
-                        .eval(&format!("step({})", step))
-                        .unwrap();
-                }
-                _ => unimplemented!(),
-            }
-            Ok(())
-        })
-        .run()
-        .unwrap();
+    for player in &game.home_team.players {
+        let x = rand.gen_range(0, &game.field_w);
+        let y = rand.gen_range(0, game.field_h);
+        draw_player(x, y, context, g);
+    }
 }
 
-fn get_content() -> String {
-    let html = format!(
-        r#"
-		<!doctype html>
-		<html>
-            <head>
-            <style>
-            {styles}
-            </style>
-			</head>
-            <body>
-            <canvas id="field" width="800" height="518"></canvas>
-            <span id="debug"></span>
+fn draw_pitch<G>(context: Context, g: &mut G)
+where
+    G: Graphics,
+{
+}
 
-            <script>
-                {scripts}
-            </script>
-			</body>
-		</html>
-		"#,
-        styles = include_str!("style.css"),
-        scripts = include_str!("test.js")
-    );
+fn draw_player<G>(x: usize, y: usize, context: Context, g: &mut G)
+where
+    G: Graphics,
+{
+    let red = [1.0, 0.0, 0.0, 1.0]; // TODO Make const
+    let square = rectangle::square(x as f64, y as f64, 10.0);
 
-    html.to_string()
+    ellipse(red, square, context.transform, g);
+}
+
+pub fn start() {
+    let (w, h) = (800, 515);
+    let game = Game::new(w, h, "FC Barcelona", "Liverpool");
+
+    let mut window: PistonWindow = WindowSettings::new("Football Simulator", [800, 515]) // TODO W an height
+        .exit_on_esc(true)
+        .build()
+        .unwrap();
+
+    let white = [1.0; 4]; // TODO Make const
+    while let Some(event) = window.next() {
+        window.draw_2d(&event, |context, graphics, _device| {
+            clear(white, graphics);
+
+            render(&game, context, graphics);
+        });
+    }
 }

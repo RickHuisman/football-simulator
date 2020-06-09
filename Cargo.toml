@@ -7,8 +7,8 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-web-view = { version = "0.5.4" }
 serde = { version = "1.0.110", features = ["derive"] }
 serde_json = "1.0"
 csv = "1.1"
 rand = "0.7.3"
+piston_window = "0.98.0"

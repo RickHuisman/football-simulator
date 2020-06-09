@@ -4,10 +4,10 @@ use crate::fifa;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Game {
-    field_w: usize,
-    field_h: usize,
-    home_team: Team,
-    away_team: Team,
+    pub field_w: usize,
+    pub field_h: usize,
+    pub home_team: Team,
+    pub away_team: Team,
 }
 
 impl Game {
@@ -15,23 +15,27 @@ impl Game {
         let csv_file =
             "/Users/rickhuisman/Downloads/360179_705412_bundle_archive/players_20.csv".to_string();
 
-        let home_team = fifa::get_team("FC Barcelona", &csv_file);
-        let away_team = fifa::get_team("Liverpool", &csv_file);
-
         Game {
             field_w,
             field_h,
-            home_team,
-            away_team,
+            home_team: fifa::get_team(home_team, &csv_file),
+            away_team: fifa::get_team(away_team, &csv_file),
         }
     }
 
-    pub fn step(self) -> GameStep {
+    pub fn step(&mut self) -> GameStep {
+        // Update player positions
+
+        self.home_team.players[0].pos.x += 10;
+
+        // for player in &self.home_team.players {
+        //     player.pos.x += 10;
+        // }
+
         GameStep {
-            home_team: self.home_team,
-            away_team: self.away_team
+            home_team: self.home_team.clone(),
+            away_team: self.away_team.clone(),
         }
-        // &self.home_team
     }
 }
 
@@ -64,6 +68,7 @@ pub struct Player {
     pub name: String,
     pub overall: u32,
     pub team_position: String,
+    pub pos: Position,
 }
 
 impl Player {
@@ -73,6 +78,7 @@ impl Player {
             name,
             overall,
             team_position,
+            pos: Position::new(0, 0),
         }
     }
 }

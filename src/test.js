@@ -6,7 +6,6 @@ const Game = (function () {
   let awayTeam = [];
 
   const step = function () {
-    console.log("draw()");
     external.invoke("step");
   };
 
@@ -20,20 +19,23 @@ const Game = (function () {
     });
 
     step.away_team.players.forEach((player) => {
-      console.log(player);
+      // console.log(player.pos)
       if (player.team_position != "SUB" && player.team_position != "RES") {
-        awayTeam.push(new Player("away", player.team_position));
+        const p = new Player("away", player.team_position);
+        awayTeam.push(p);
       }
     });
 
     draw();
+
+    // console.log(homeTeam[0])
     // Game.draw();
-    // const player = Game.awayTeam[0];
-    // const point = {
-    //   x: x,
-    //   y: y
-    // }
-    // player.move(point);
+    const player = awayTeam[0];
+    const point = {
+      x: 200,
+      y: 200
+    }
+    player.move(point);
   }
 
   const reset = function () {
@@ -42,7 +44,7 @@ const Game = (function () {
   }
 
   const start = function () {
-    timer = window.setInterval(step, 100);
+    timer = window.setInterval(step, 500);
   };
 
   const draw = function () {
@@ -268,7 +270,6 @@ const playerAwayStartingPosition = {
   ST: [420, 259],
   CF: [420, 259],
 };
-
 
 class Player {
   constructor(team, role) {
